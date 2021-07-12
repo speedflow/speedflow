@@ -1,11 +1,20 @@
-FROM alpine:3.14
+# Builder
 
-COPY speedflow /bin/speedflow
+FROM golang:1.16-alpine3.14 AS builder
 
-RUN addgroup -g 1000 -S speedflow && \
-    adduser -u 1000 -S speedflow -G speedflow && \
-    chown speedflow:speedflow /bin/speedflow
+WORKDIR /builder
+COPY go.mod go.sum Makefile ./
+COPY internal internal
+COPY pkg pkg
+COPY cmd cmd
+RUN apk --no-cache add make \
+    && make build
 
-USER speedflow:speedflow
+# Final image
 
-ENTRYPOINT ["/bin/speedflow"]
+FROM alpine:3.14.0
+
+COPY --from=builder /builder/bin/speedflow /bin/speedflow
+RUN apk add --update ca-certificates \
+    && rm /var/cache/apk/*
+ENTRYPOINT [ "/bin/speedflow" ]
