@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	cmdList "github.com/speedflow/speedflow/internal/speedflow/command/list"
 	cmdVersion "github.com/speedflow/speedflow/internal/speedflow/command/version"
 	ver "github.com/speedflow/speedflow/pkg/version"
 	"github.com/spf13/cobra"
@@ -14,12 +15,6 @@ import (
 
 var (
 	cfgFile string
-
-	cmd = &cobra.Command{
-		Use:     "speedflow",
-		Short:   "Increase your flow productivity with style",
-		Version: ver.Version,
-	}
 )
 
 // initConfig reads in config file and ENV variables if set.
@@ -42,14 +37,42 @@ func initConfig() {
 }
 
 // Execute executes command
-func Execute(in io.Reader, out, err io.Writer) {
+func Execute(inIO io.Reader, outIO, errIO io.Writer) {
+	_, err := ExecuteC(inIO, outIO, errIO)
+	cobra.CheckErr(err)
+}
+
+func ExecuteC(in io.Reader, out, err io.Writer, args ...string) (*cobra.Command, error) {
+	cmd := &cobra.Command{
+		Use:     "speedflow",
+		Short:   "Increase your flow productivity with style",
+		Version: ver.Version,
+	}
+	cmd.Run = run(cmd, in, out, err)
+
 	cobra.OnInitialize(initConfig)
 
 	cmd.SetIn(in)
 	cmd.SetOut(out)
 	cmd.SetErr(err)
+	cmd.SetArgs(args)
+
+	cmd.Flags().BoolP("list", "l", false, "List flows")
 
 	cmd.AddCommand(cmdVersion.New(in, out, err))
 
-	cobra.CheckErr(cmd.Execute())
+	return cmd, cmd.Execute()
+}
+
+func run(rootCmd *cobra.Command, in io.Reader, out, errIO io.Writer) func(cmd *cobra.Command, args []string) {
+	return func(cmd *cobra.Command, args []string) {
+		if showList, _ := rootCmd.Flags().GetBool("list"); showList {
+			err := cmdList.New(in, out, errIO).Execute()
+			cobra.CheckErr(err)
+			return
+		}
+
+		// TODO: implement
+		fmt.Fprintln(out, "Hello World!")
+	}
 }

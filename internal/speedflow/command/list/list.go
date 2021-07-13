@@ -1,20 +1,19 @@
-package version
+package list
 
 import (
+	"fmt"
 	"io"
 
 	"github.com/spf13/cobra"
-
-	"github.com/speedflow/speedflow/pkg/version"
 )
 
 var output = ""
 
-// New returns a command to print version
+// New returns a command to print list
 func New(in io.Reader, out, err io.Writer) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "version",
-		Short: "Print Speedflow version",
+		Use:   "list",
+		Short: "List all flows",
 		Run:   run(out),
 	}
 
@@ -30,6 +29,8 @@ func New(in io.Reader, out, err io.Writer) *cobra.Command {
 // run returns the command
 func run(out io.Writer) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
-		version.Print(out, output)
+		// TODO: implement
+		fmt.Fprintln(out, "Flow     Name        ")
+		fmt.Fprintln(out, "default  Default flow")
 	}
 }
