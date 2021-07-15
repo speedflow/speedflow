@@ -5,6 +5,10 @@ import (
 	"github.com/speedflow/speedflow/internal/speedflow/speedflow/variable"
 )
 
+var (
+	SF = &Speedflow{}
+)
+
 // Speedflow represents the YAML file
 type Speedflow struct {
 	// Version is the .speedflow.yaml schema version
