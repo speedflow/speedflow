@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 
-	cmdList "github.com/speedflow/speedflow/internal/speedflow/command/list"
 	cmdVersion "github.com/speedflow/speedflow/internal/speedflow/command/version"
 	"github.com/speedflow/speedflow/internal/speedflow/speedflow"
 	ver "github.com/speedflow/speedflow/pkg/version"
@@ -41,8 +40,8 @@ func initConfig() {
 }
 
 // Execute executes command
-func Execute(inIO io.Reader, outIO, errIO io.Writer) {
-	_, err := ExecuteC(inIO, outIO, errIO)
+func Execute() {
+	_, err := ExecuteC(os.Stdin, os.Stdout, os.Stderr)
 	cobra.CheckErr(err)
 }
 
@@ -57,7 +56,7 @@ func ExecuteC(in io.Reader, out, errIO io.Writer, args ...string) (*cobra.Comman
 		Short:   "Increase your flow productivity with style",
 		Version: ver.Version,
 	}
-	cmd.Run = run(cmd, in, out, errIO)
+	cmd.Run = run(cmd)
 
 	cmd.SetIn(in)
 	cmd.SetOut(out)
@@ -65,7 +64,7 @@ func ExecuteC(in io.Reader, out, errIO io.Writer, args ...string) (*cobra.Comman
 	cmd.SetArgs(args)
 
 	// Add subcommands
-	cmd.AddCommand(cmdVersion.New(in, out, errIO))
+	cmd.AddCommand(cmdVersion.New())
 
 	// Add flags
 	flags(cmd)
@@ -83,7 +82,7 @@ func flags(cmd *cobra.Command) {
 	cmd.Flags().StringP("config", "c", filepath.Join(cfgPath(), cfgFile), "Configuration file")
 }
 
-func run(rootCmd *cobra.Command, in io.Reader, out, errIO io.Writer) func(cmd *cobra.Command, args []string) {
+func run(rootCmd *cobra.Command) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		// Load speedflow file
 		f, err := cmd.Flags().GetString("file")
@@ -93,14 +92,14 @@ func run(rootCmd *cobra.Command, in io.Reader, out, errIO io.Writer) func(cmd *c
 
 		// Display list
 		if showList, _ := rootCmd.Flags().GetBool("list"); showList {
-			err := cmdList.New(in, out, errIO).Execute()
-			cobra.CheckErr(err)
+			fmt.Fprintln(cmd.OutOrStdout(), "Flow     Name        ")
+			fmt.Fprintln(cmd.OutOrStdout(), "default  Default flow")
 			return
 		}
 
 		// Execute command
 		// TODO: implement
-		fmt.Fprintln(out, "Hello World!")
+		fmt.Fprintln(cmd.OutOrStdout(), "Hello World!")
 	}
 }
 
