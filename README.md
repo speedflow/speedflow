@@ -1,4 +1,4 @@
-# 🐰 Rabdis – Play with redis keys from RabbitMQ messages
+# 🚀 Speedflow — Increase your flow productivity with style
 
 [![Build status](https://github.com/speedflow/speedflow/workflows/Builds%20and%20tests%20Go/badge.svg)](https://github.com/speedflow/speedflow/actions)
 [![Go Report Card](https://goreportcard.com/badge/github.com/speedflow/speedflow)](https://goreportcard.com/report/github.com/speedflow/speedflow)
@@ -9,6 +9,6 @@
 
 ---
 
-![Speedlow](docs/assets/speedflow.gif)
+![Speedflow](docs/assets/speedflow.png)
 
 ---
