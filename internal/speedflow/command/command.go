@@ -48,12 +48,6 @@ func Execute(inIO io.Reader, outIO, errIO io.Writer) {
 
 // ExecuteC executes command with arguments and returns command
 func ExecuteC(in io.Reader, out, errIO io.Writer, args ...string) (*cobra.Command, error) {
-	// Current directory
-	currentDir, err := os.Getwd()
-	if err != nil {
-		cobra.CheckErr(err)
-	}
-
 	// Cobra initialization
 	cobra.OnInitialize(initConfig)
 
@@ -74,24 +68,28 @@ func ExecuteC(in io.Reader, out, errIO io.Writer, args ...string) (*cobra.Comman
 	cmd.AddCommand(cmdVersion.New(in, out, errIO))
 
 	// Add flags
+	flags(cmd)
+
+	return cmd, cmd.Execute()
+}
+
+func flags(cmd *cobra.Command) {
+	// Current directory
+	currentDir, err := os.Getwd()
+	cobra.CheckErr(err)
+
 	cmd.Flags().BoolP("list", "l", false, "List flows")
 	cmd.Flags().StringP("file", "f", filepath.Join(currentDir, sfFile), "Speedflow file")
 	cmd.Flags().StringP("config", "c", filepath.Join(cfgPath(), cfgFile), "Configuration file")
-
-	return cmd, cmd.Execute()
 }
 
 func run(rootCmd *cobra.Command, in io.Reader, out, errIO io.Writer) func(cmd *cobra.Command, args []string) {
 	return func(cmd *cobra.Command, args []string) {
 		// Load speedflow file
 		f, err := cmd.Flags().GetString("file")
-		if err != nil {
-			cobra.CheckErr(err)
-		}
-		if err := speedflow.Load(f); err != nil {
-			// TODO: Error handling
-			cobra.CheckErr(err)
-		}
+		cobra.CheckErr(err)
+		err = speedflow.Load(f)
+		cobra.CheckErr(err)
 
 		// Display list
 		if showList, _ := rootCmd.Flags().GetBool("list"); showList {
@@ -109,9 +107,7 @@ func run(rootCmd *cobra.Command, in io.Reader, out, errIO io.Writer) func(cmd *c
 func cfgPath() string {
 	// Home directory
 	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		cobra.CheckErr(err)
-	}
+	cobra.CheckErr(err)
 
 	return filepath.Join(homeDir, cfgSubPath)
 }
