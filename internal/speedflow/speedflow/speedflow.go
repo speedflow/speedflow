@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	// SF is a global instance of Speedflow.
 	SF = &Speedflow{}
 )
 

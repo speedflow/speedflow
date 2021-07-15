@@ -46,6 +46,7 @@ func Execute(inIO io.Reader, outIO, errIO io.Writer) {
 	cobra.CheckErr(err)
 }
 
+// ExecuteC executes command with arguments and returns command
 func ExecuteC(in io.Reader, out, errIO io.Writer, args ...string) (*cobra.Command, error) {
 	// Current directory
 	currentDir, err := os.Getwd()
