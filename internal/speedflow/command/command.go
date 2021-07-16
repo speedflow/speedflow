@@ -14,18 +14,22 @@ import (
 )
 
 var (
-	cfg string
+	// Exitable is used to exit on error
+	// Useful for tests
+	Exitable = true
 
-	cfgSubPath = ".config/speedflow/"
-	cfgFile    = "speedflow.yml"
+	cfgPathFile string
+	cfgSubPath  = ".config/speedflow/"
+	cfgFile     = "speedflow.yml"
 
-	sfFile = ".speedflow.yml"
+	spPathFile string
+	sfFile     = ".speedflow.yml"
 )
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfg != "" {
-		viper.SetConfigFile(cfg)
+	if cfgPathFile != "" {
+		viper.SetConfigFile(cfgPathFile)
 	} else {
 		viper.AddConfigPath(cfgPath())
 		viper.SetConfigType("yml")
@@ -56,7 +60,7 @@ func ExecuteC(in io.Reader, out, errIO io.Writer, args ...string) (*cobra.Comman
 		Short:   "Increase your flow productivity with style",
 		Version: ver.Version,
 	}
-	cmd.Run = run(cmd)
+	cmd.Run = run
 
 	cmd.SetIn(in)
 	cmd.SetOut(out)
@@ -78,29 +82,28 @@ func flags(cmd *cobra.Command) {
 	cobra.CheckErr(err)
 
 	cmd.Flags().BoolP("list", "l", false, "List flows")
-	cmd.Flags().StringP("file", "f", filepath.Join(currentDir, sfFile), "Speedflow file")
-	cmd.Flags().StringP("config", "c", filepath.Join(cfgPath(), cfgFile), "Configuration file")
+	cmd.Flags().StringVarP(&spPathFile, "file", "f", filepath.Join(currentDir, sfFile), "Speedflow file")
+	cmd.Flags().StringVarP(&cfgPathFile, "config", "c", filepath.Join(cfgPath(), cfgFile), "Configuration file")
 }
 
-func run(rootCmd *cobra.Command) func(cmd *cobra.Command, args []string) {
-	return func(cmd *cobra.Command, args []string) {
-		// Load speedflow file
-		f, err := cmd.Flags().GetString("file")
-		cobra.CheckErr(err)
-		err = speedflow.Load(f)
-		cobra.CheckErr(err)
-
-		// Display list
-		if showList, _ := rootCmd.Flags().GetBool("list"); showList {
-			fmt.Fprintln(cmd.OutOrStdout(), "Flow     Name        ")
-			fmt.Fprintln(cmd.OutOrStdout(), "default  Default flow")
-			return
-		}
-
-		// Execute command
-		// TODO: implement
-		fmt.Fprintln(cmd.OutOrStdout(), "Hello World!")
+func run(cmd *cobra.Command, args []string) {
+	// Load speedflow file
+	if err := speedflow.Load(spPathFile); err != nil {
+		cmd.PrintErrf("Error: %s\n", err)
+		exit(1)
+		return
 	}
+
+	// Display list
+	if showList, _ := cmd.Flags().GetBool("list"); showList {
+		cmd.Println("Flow     Name        ")
+		cmd.Println("default  Default flow")
+		return
+	}
+
+	// Execute command
+	// TODO: implement
+	cmd.Println("Hello World!")
 }
 
 func cfgPath() string {
@@ -109,4 +112,10 @@ func cfgPath() string {
 	cobra.CheckErr(err)
 
 	return filepath.Join(homeDir, cfgSubPath)
+}
+
+func exit(c int) {
+	if Exitable {
+		os.Exit(c)
+	}
 }
