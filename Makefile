@@ -32,7 +32,7 @@ build: clean   ## Build local binary
 	go build -o ./${BIN_DIR} ./cmd/${NAME}
 
 build-image:   ## Build local image
-	${CONTAINER_ENGINE} build -f ${CONTAINER_FILE} -t ghcr.io/${NAME}/${NAME}:${TAG} .
+	${CONTAINER_ENGINE} build --no-cache=true --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') -f ${CONTAINER_FILE} -t ghcr.io/${NAME}/${NAME}:${TAG} .
 
 run-container: ## Build local container
 	${CONTAINER_ENGINE} run --rm -it ghcr.io/${NAME}/${NAME}:${TAG}
