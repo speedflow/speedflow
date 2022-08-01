@@ -6,8 +6,6 @@ import (
 	"github.com/speedflow/speedflow/pkg/version"
 )
 
-var output = ""
-
 // New returns a command to print version
 func New() *cobra.Command {
 	cmd := &cobra.Command{
@@ -16,12 +14,11 @@ func New() *cobra.Command {
 		Run:   run,
 	}
 
-	cmd.Flags().StringVarP(&output, "output", "o", "", "One of '', 'yaml' or 'json'.")
-
 	return cmd
 }
 
 // run returns the command
 func run(cmd *cobra.Command, args []string) {
-	version.Print(cmd.OutOrStdout(), output)
+	o, _ := cmd.Parent().PersistentFlags().GetString("output")
+	version.Print(cmd.OutOrStdout(), o)
 }

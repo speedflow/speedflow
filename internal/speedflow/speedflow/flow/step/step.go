@@ -22,9 +22,8 @@ type Actions struct {
 	// ActionPrintInfo is an action to print an info message to stdOut
 	ActionPrintInfo string `yaml:"printInfo"`
 
-	// ActionRun is an action to execute command in a shell
-	// TODO: Convert to struct?
-	ActionRun string `yaml:"run"`
+	// ActionExecute is an action to execute script in a shell
+	ActionExecute string `yaml:"execute"`
 
 	// ActionFlow is an action to execute an other flow
 	ActionFlow string `yaml:"flow"`

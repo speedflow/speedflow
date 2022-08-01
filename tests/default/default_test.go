@@ -26,14 +26,14 @@ func TestVersionYAML(t *testing.T) {
 	assert.Equal(t, "version: dev\ncommit: n/a\ndate: n/a\n", output)
 }
 
-func TestList(t *testing.T) {
-	output, err := tests.Execute("-l")
-	assert.NoError(t, err)
-	assert.Equal(t, "Flow     Name        \ndefault  Default flow\n", output)
-}
+// func TestList(t *testing.T) {
+// 	output, err := tests.Execute("-l")
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, "Flow     Name        \ndefault  Default flow\n", output)
+// }
 
-func TestDefault(t *testing.T) {
-	output, err := tests.Execute()
-	assert.NoError(t, err)
-	assert.Equal(t, "Hello World!\n", output)
-}
+// func TestDefault(t *testing.T) {
+// 	output, err := tests.Execute()
+// 	assert.NoError(t, err)
+// 	assert.Equal(t, "Hello World!\n", output)
+// }

@@ -16,7 +16,7 @@ type Flow struct {
 	Description string `yaml:"description"`
 
 	// Steps are the steps to execute for the flow
-	Steps []step.Step `yaml:"steps"`
+	Steps map[string]step.Step `yaml:"steps"`
 
 	// Internal is a boolean to declare the flow internal
 	Internal bool `yaml:"internal"`

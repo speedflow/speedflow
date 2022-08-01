@@ -1,17 +1,18 @@
 ---
-
-version: '1'
+version: "1"
 
 flows:
   default:
     name: Default flow
     description: This is the default flow
     steps:
-    - run: echo "Hello World!"
+      sayHello:
+        execute: |
+          echo "Hello World!"
 
 # ./speedflow -l
 #
-# Flow  Name        
+# Flow  Name
 #       Default flow
 
 # ./speedflow -l -o wide
