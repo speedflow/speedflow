@@ -1,7 +1,7 @@
 # Arguments
 
 ARG BUILD_DATE
-ARG GO_VERSION=1.18
+ARG GO_VERSION=1.19
 ARG ALPINE_VERSION=3.16
 ARG AUTHORS="Julien Breux <julien.breux@gmail.com>"
 
